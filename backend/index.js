@@ -23,7 +23,8 @@ if (!url) {
 }
 
 var time = 0;
-var average = 0;
+var average_gas = -1;
+var n_average_gas = 0;
 db = cloudant.db.use(dbname);
 
 setInterval(() => {
@@ -46,7 +47,19 @@ setInterval(() => {
       for (var i = 0; i < result.docs.length; i++) {
         console.log('Doc id: %s, payload: ', result.docs[i]._id, result.docs[i].payload);
         if (result.docs[i].payload.d.time > time) {
-          time = result.docs[i].payload.d.time;
+          time = parseInt(result.docs[i].payload.d.time);
+        }
+        if (average_gas < 0) {
+          average_gas = parseFloat(result.docs[i].payload.d.Gas);
+        }
+        else {
+          average_gas = (average_gas * n_average_gas + parseFloat(result.docs[i].payload.d.Gas)) / (n_average_gas + 1);
+        }
+        n_average_gas += 1;
+        console.log('moving gas average: ' + (average_gas).toFixed(6) + " iteration " + n_average_gas);
+        if (parseFloat(result.docs[i].payload.d.Gas) > 1.05 * average_gas) {
+
+          console.log("***************\n**** ALERT ****\n***************");
         }
       }
     });
