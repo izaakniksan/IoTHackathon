@@ -19,6 +19,15 @@ class App extends Component {
   }
 
   componentDidMount() {
+
+    fetch('http://localhost:3002/alert').
+    then(response => response.json()).then((alert) => {
+      console.log(alert);
+      this.setState({
+        alert: alert
+      });
+    });
+
     // let headers = new Headers();
     // headers.append('Authorization', 'Basic ' + username + ":" + password));
     // fetch(dburl, {
