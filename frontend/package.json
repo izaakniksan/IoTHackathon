@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@cloudant/cloudant": "^2.4.0",
+    "plotly.js": "^1.41.3",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
-    "react-scripts": "2.0.5"
+    "react-plotly.js": "^2.2.0",
+    "react-scripts": "2.0.5",
+    "react-vis": "^1.11.3"
   },
   "scripts": {
     "start": "react-scripts start",
