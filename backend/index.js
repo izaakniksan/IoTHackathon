@@ -1,10 +1,10 @@
-'use strict';
+ 'use strict';
 
 const express = require('express')
 var Cloudant = require('@cloudant/cloudant');
 var async_req = require('async');
 
-const port = 3001
+const port = 3002
 const url = 'https://dminsitchappordediverede:0d213f72e3dda91a6d27acd1bb23d4243a3f5d45@958edf45-e095-4a52-99d1-ce088c9b2c39-bluemix.cloudant.com';
 const app = express()
 var cloudant = Cloudant({url: url});
@@ -12,8 +12,13 @@ const dbname = 'sensordata';
 var db = null;
 var doc = null;
 
+var alert = 0;
+
 app.get('/', (req, res) => res.send('Hello World node!'))
-app.get('/data', (req, res) => res.send("data here" + JSON.stringify(doc)))
+app.get('/alert', function(req, res) {
+  res.send("{average: " + JSON.stringify(average_gas) + ", alert level: " + JSON.stringify(last_alert_gas) + "alert: " + JSON.stringify(alert))
+  alert = 0;
+})
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
@@ -25,6 +30,7 @@ if (!url) {
 var time = 0;
 var average_gas = -1;
 var n_average_gas = 0;
+var last_alert_gas = 0;
 db = cloudant.db.use(dbname);
 
 setInterval(() => {
@@ -58,8 +64,9 @@ setInterval(() => {
         n_average_gas += 1;
         console.log('moving gas average: ' + (average_gas).toFixed(6) + " iteration " + n_average_gas);
         if (parseFloat(result.docs[i].payload.d.Gas) > 1.05 * average_gas) {
-
+          alert = 1;
           console.log("***************\n**** ALERT ****\n***************");
+          last_alert_gas = result.docs[i].payload.d.Gas;
         }
       }
     });
