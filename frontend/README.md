@@ -1,3 +1,13 @@
+# Frontend application for AirWare
+
+To run the app: make sure to run the backend service first, then:
+```
+npm install
+npm run
+```
+The app will launch in a new browser window and shows the data collected by the sensors.
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
