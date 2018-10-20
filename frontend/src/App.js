@@ -2,39 +2,95 @@ import React, { Component } from 'react';
 import './App.css';
 import { DATA } from './data';
 import '../node_modules/react-vis/dist/style.css';
-import {
-  XYPlot, XAxis, YAxis, VerticalGridLines,
-  HorizontalGridLines, LineMarkSeries
-} from 'react-vis';
+import Cloudant from '@cloudant/cloudant';
+
+import Plot from 'react-plotly.js';
 
 class App extends Component {
 
-  render() {
-    var data = [[], [], [], []];
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+      layout: { width: 1280, height: 960, title: 'Air quality' },
+      frames: [],
+      config: {}
+    };
+  }
+
+  componentDidMount() {
+    // let headers = new Headers();
+    // headers.append('Authorization', 'Basic ' + username + ":" + password));
+    // fetch(dburl, {
+    //   headers: headers
+    // })
+    // .then(res => {
+    //   if (res.status == 200) {
+    //     console.log(res.json);
+    //   }
+    // })
+    // .catch(err => console.log(err));
+
+    var plotData = [[], [], [], [], []];
     console.log(DATA);
     for (var i = 0; i < DATA.length; i++) {
-      data[0].push({ x: i, y: DATA[i].d.Temp });
-      data[1].push({ x: i, y: DATA[i].d.Pressure / 10 })
-      data[2].push({ x: i, y: DATA[i].d.Humidity });
-      data[3].push({ x: i, y: DATA[i].d.Gas });
+      plotData[0].push(i);
+      plotData[1].push(DATA[i].d.Temp);
+      plotData[2].push(DATA[i].d.Pressure);
+      plotData[3].push(DATA[i].d.Humidity);
+      plotData[4].push(DATA[i].d.Gas);
     }
+    var updatedData = [
+      {
+        x: plotData[0],
+        y: plotData[1],
+        type: 'scatter',
+        mode: 'lines+points',
+        marker: { color: 'red' },
+        name: 'Temp'
+      },
+      {
+        x: plotData[0],
+        y: plotData[2],
+        type: 'scatter',
+        mode: 'lines+points',
+        marker: { color: 'blue' },
+        name: 'Pressure'
+      },
+      {
+        x: plotData[0],
+        y: plotData[3],
+        type: 'scatter',
+        mode: 'lines+points',
+        marker: { color: 'green' },
+        name: 'Humidity'
+      },
+      {
+        x: plotData[0],
+        y: plotData[4],
+        type: 'scatter',
+        mode: 'lines+points',
+        marker: { color: 'yellow' },
+        name: 'Gas'
+      }
+    ];
+    console.log(plotData);
+    console.log(this.state.data);
 
+    this.setState({ data: updatedData });
+  }
+
+
+  render() {
     return (
-      <div className="App">
-        <XYPlot height={600} width={600}>
-          <VerticalGridLines />
-          <HorizontalGridLines />
-          <XAxis />
-          <YAxis />
-          <LineMarkSeries
-            className="tempSeries"
-            style={{strokeWidth: '3px'}}
-            data={data[0]} />
-          <LineMarkSeries className="pressureSeries" data={data[1]} />
-          <LineMarkSeries className="humiditySeries" data={data[2]} />
-          <LineMarkSeries className="gasSeries" data={data[3]} />
-        </XYPlot>
-      </div>
+      <Plot
+        data={this.state.data}
+        layout={this.state.layout}
+        frames={this.state.frames}
+        config={this.state.config}
+        onInitialized={(figure) => this.setState(figure)}
+        onUpdate={(figure) => this.setState(figure)}
+      />
     );
 
   }
